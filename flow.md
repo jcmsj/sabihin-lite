@@ -35,11 +35,10 @@
 
 ### Keypair derivation
 1. input: `master key`
-2. generate an ECDSA keypair
+2. generate an ECDH keypair
 3. encrypt the private key using the master key
 4. return the public key and the encrypted private key
 
-### Adds
 ## Login Flow
 1. input: 
     1. `username`
