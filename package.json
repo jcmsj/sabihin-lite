@@ -1,0 +1,49 @@
+{
+  "name": "nuxt-app",
+  "description": "Nuxt + DaisyUI + Icones + VueUse Starter",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "d": "nuxt dev",
+    "prep": "nuxt prepare",
+    "p": "nuxt prepare",
+    "pd": "nuxt prepare && nuxt dev",
+    "generate": "nuxt generate",
+    "gen": "nuxt generate",
+    "g": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:push": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio",
+    "cleanup": "pnpm nuxt cleanup",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "devDependencies": {
+    "@formkit/nuxt": "^1.6.2",
+    "@nuxt/devtools": "^1.1.5",
+    "@nuxtjs/tailwindcss": "^6.12.0",
+    "@sidebase/nuxt-auth": "^0.7.2",
+    "@types/node": "^20.12.7",
+    "@types/webcrypto": "^0.0.30",
+    "@vueuse/nuxt": "^10.9.0",
+    "daisyui": "^4.10.2",
+    "drizzle-kit": "^0.20.17",
+    "nuxt": "^3.11.2",
+    "nuxt-icon": "^0.6.10",
+    "vue": "^3.4.23",
+    "vue-router": "^4.3.2"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@types/pg": "^8.11.5",
+    "@zxcvbn-ts/core": "^3.0.4",
+    "@zxcvbn-ts/language-common": "^3.0.4",
+    "@zxcvbn-ts/language-en": "^3.0.2",
+    "drizzle-orm": "^0.29.5",
+    "hash-wasm": "^4.11.0",
+    "pg": "^8.11.5"
+  }
+}

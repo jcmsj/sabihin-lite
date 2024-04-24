@@ -20,9 +20,9 @@
     1. `password`
     2. `salt`
 3. append password to salt
-4. treat salted password as an `ECDH` key
 5. hash salted password w/ `argon2id`
-6. derive the master key from the hash salted password
+4. Convert the hashed salted password to an `ECDH` key
+6. derive a master key from the hash salted password
 7. The master key is 256-bit `AES-GCM` key
 8. return
     1. `master key`

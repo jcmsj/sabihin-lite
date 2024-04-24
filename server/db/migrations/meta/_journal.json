@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1713452414154,
+      "tag": "0000_misty_stingray",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1713970793939,
+      "tag": "0001_living_mauler",
+      "breakpoints": true
+    }
+  ]
+}

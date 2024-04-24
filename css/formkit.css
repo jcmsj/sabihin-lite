@@ -1,0 +1,18 @@
+.formkit-input[type="submit"] {
+    @apply btn btn-primary;
+}
+
+.formkit-input[type="text"],
+.formkit-input[type="email"],
+.formkit-input[type="password"],
+.formkit-input[type="date"] {
+    @apply input input-bordered p-1 !important;
+}
+
+select.formkit-input {
+    @apply select select-bordered;
+}
+
+.formkit-message[data-message-type="validation"] {
+    @apply text-error;
+}
