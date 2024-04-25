@@ -36,5 +36,5 @@ export default eventHandler(async(event) => {
 
     console.log(body)
     const result = await registerUser(body)
-    return result
+    return true;
 })

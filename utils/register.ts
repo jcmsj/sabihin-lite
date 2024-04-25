@@ -15,9 +15,9 @@ export async function register(userName: string, password: string, domain: strin
     // TODO: store keypair in localStorage
 
     const encryptedPrivateKey = await masterKey.wrapKey("jwk", keypair.privateKey)
-    
+
     const jwkEncryptedPrivateKey = encodeBase64(new Uint8Array(encryptedPrivateKey))
-    
+
     const jsonPublickey = await crypto.subtle.exportKey("jwk", keypair.publicKey)
     const r = await $fetch("/api/register", {
         method: "POST",
@@ -33,4 +33,8 @@ export async function register(userName: string, password: string, domain: strin
         }
     },
     )
+
+    if (r) {
+        login(userName, password, domain)
+    }
 }
