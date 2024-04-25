@@ -5,11 +5,17 @@
       <Title>Sign Up</Title>
     </Head>
     <form class="card card-normal h-max w-full max-w-xl"
-      @submit.prevent="register(username, password, DOMAIN)"
+      @submit.prevent="onSubmit"
      >
       <div class="card-body">
         <!-- TODO: Use the commented labels for errors/assistance -->
-        <NewUsername v-model="username" :host="host"/>
+        <NewUsername v-model="username" :host="host" :inputClass="{'input-error': httpState == 409}">
+          <template #top-right-label>
+            <span class="text-error text-xl">
+              <span v-if="httpState == 409">Username is already taken</span>
+            </span>
+          </template>
+        </NewUsername>
         <!-- <NewEmail v-model="email" /> -->
         <NewPassword v-model="password" />
         <div class="card-actions flex-col items-center gap-y-4">
@@ -31,13 +37,26 @@ definePageMeta({
     navigateAuthenticatedTo: "/",
   },
 });
-  // Can't access window statically
-// const host = computed(() => window.location.host);
 const host = "localhost:3000"
 const username = ref("");
-// const email = ref("");
 const password = ref("");
-
+const httpState = ref<number>(200)
+const duplicateUsernames = ref<string[]>([])
+watchEffect(() => {
+  if (duplicateUsernames.value.includes(username.value) ) {
+    httpState.value = 409
+  } else {
+    httpState.value = 200
+  }
+})
+async function onSubmit() {
+  const response = await register(username.value, password.value, DOMAIN);
+  console.log(response)
+  httpState.value = response.status
+  if (response.status == 409 && response.message == '[POST] "/api/register": 409 Username already exists') {
+    duplicateUsernames.value.push(username.value)
+  }
+}
 </script>
 <style scoped>
 

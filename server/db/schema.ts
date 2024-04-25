@@ -6,9 +6,8 @@ function requiredTimestamp(column_name: string) {
 }
 export const users = pgTable("user", {
     id: serial("id").primaryKey(),
-    userName: text("user_name").notNull(),
+    userName: text("user_name").notNull().unique(),
     role: UserRoleEnum('role').notNull(),
-    // email: text("email").notNull(),
     createdAt: requiredTimestamp("created_at"),
     updatedAt: requiredTimestamp("updated_at"),
 })

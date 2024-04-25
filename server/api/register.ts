@@ -1,5 +1,6 @@
 import { db, tables } from "../db";
 
+const UNIQUE_CONSTRAINT_ERROR = "23505"
 async function registerUser(data: {
     userName:string, 
     domainSignature:string, 
@@ -12,7 +13,16 @@ async function registerUser(data: {
         userName: data.userName,
     }).returning({
         id: tables.users.id,
-    }).then(takeUniqueOrThrow);
+    }).then(takeUniqueOrThrow).catch(error => {
+        if (error.code == UNIQUE_CONSTRAINT_ERROR) {
+            throw createError({
+                statusCode: 409,
+                statusMessage: "Username already exists"
+            })
+        }
+        // else throw it again
+        throw error;
+    });
 
     const secret = db.insert(tables.secrets).values({
         privateKey: data.jwkEncryptedPrivateKey,
