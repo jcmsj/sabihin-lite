@@ -33,6 +33,7 @@
     "drizzle-kit": "^0.20.17",
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
+    "nuxt-typed-router": "^3.6.3",
     "vue": "^3.4.23",
     "vue-router": "^4.3.2"
   },
@@ -44,6 +45,7 @@
     "@zxcvbn-ts/language-en": "^3.0.2",
     "drizzle-orm": "^0.29.5",
     "hash-wasm": "^4.11.0",
+    "next-auth": "^4.21.1",
     "pg": "^8.11.5"
   }
 }

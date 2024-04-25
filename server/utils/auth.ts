@@ -1,5 +1,5 @@
 export interface LoginProps {
     username: string
-    password: string
+    domainSignature: string
     // token_2fa: string
 }

@@ -5,24 +5,28 @@ import { db, tables } from '~/server/db'
 import { and, eq } from 'drizzle-orm'
 import { takeUniqueOrThrow } from '~/server/utils/takeUniqueOrThrow'
 import * as auth from '~/server/utils/auth'
-async function getUser(userId: number) {
-    return db.select().from(tables.users)
-        .where(and(
-            eq(tables.users.id, userId), 
-            eq(tables.users.role, 'user')
-        ))
-        .limit(1).then(takeUniqueOrThrow)
-}
-async function getSecret(username: string) {
-    return db.select().from(tables.secrets)
-    .leftJoin(tables.users, eq(tables.users.id, tables.secrets.userId))
-        .where(eq(tables.secrets.userId, tables.users.id))
+
+async function getSecret(username: string, domainSignature: string) {
+    return await db.select().from(tables.secrets)
+        .leftJoin(tables.users, eq(tables.users.id, tables.secrets.userId))
+        .where(
+            and(
+                eq(tables.users.userName, username),
+                eq(tables.secrets.domainSignature, domainSignature),
+            )
+        )
         .limit(1).then(takeUniqueOrThrow)
 }
 
 export default NuxtAuthHandler({
     // A secret string you define, to ensure correct encryption
     //secret: process.env.AUTH_SECRET, // UNSURE IF THIS IS STILL NEEDED
+    session: {
+        strategy: 'jwt',
+    },
+    pages: {
+        signIn:'/login',
+    },
     providers: [
         // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
         CredentialsProvider.default({
@@ -34,24 +38,52 @@ export default NuxtAuthHandler({
             // You can pass any HTML attribute to the <input> tag through the object.
             credentials: {
                 username: { label: 'Username', type: 'text', placeholder: '(hint: chani)' },
-                password: { label: 'Password', type: 'password', placeholder: '(hint: Sihaya )' }
+                domainSignature: { label: 'Domain Signature', type: 'text', placeholder: '(hint: 0x1234)' }
             },
+
             async authorize(credentials: auth.LoginProps) {
-                const expectedCredentials = await getSecret(credentials.username)
-                // const authenticated = await auth.authenticate(credentials, expectedCredentials)
-                const authenticated = true
-                if (authenticated) {
-                    // return getUser(authenticated)
-                    // Any object returned will be saved in `user` property of the JWT
-                } else {
-                    // eslint-disable-next-line no-console
-                    console.error('Warning: Malicious login attempt registered, bad credentials provided')
+                let result: Awaited<ReturnType<typeof getSecret>> | undefined = undefined;
+                try {
+                    result = await getSecret(credentials.username, credentials.domainSignature)
+                } catch (error) {
+                    console.error('Error: ', error)
                     throw createError({
                         statusCode: 401,
-                        statusMessage: 'Invalid credentials'
+                        statusMessage: JSON.stringify(error)
                     })
                 }
-            }
+
+                if (result) {
+                    return {
+                        id: result.user?.id,
+                        encryptedPrivateKey: result.secrets.privateKey,
+                        name: result.user?.userName
+                    }
+                }
+            },
         })
-    ]
+    ],
+
+    callbacks: {
+        jwt: async ({ token, user }) => {
+            const isSignIn = user ? true : false;
+            if (isSignIn) {
+                token.id = user.id;
+                token.name = user.name;
+            }
+            return token
+        },
+        async session({ session, token }) {
+            // session.user?.name
+            console.log('token: ', token)
+            if (token) {
+                session.user = {
+                    id: token.id,
+                    name: token.name
+                }
+            }
+            console.log('session: ', session)
+            return Promise.resolve(session)
+        },
+    }
 })

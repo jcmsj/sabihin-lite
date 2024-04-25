@@ -5,7 +5,7 @@
       <Title>Sign Up</Title>
     </Head>
     <form class="card card-normal h-max w-full max-w-xl"
-      @submit.prevent="signUp(username, password, 'sabihin.lite.ph')"
+      @submit.prevent="register(username, password, DOMAIN)"
      >
       <div class="card-body">
         <!-- TODO: Use the commented labels for errors/assistance -->
@@ -21,11 +21,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { signUp } from '~/utils/registration';
+import { register } from '~/utils/register';
+import {DOMAIN} from "~/utils/domain"
+
 definePageMeta({
+  layout: 'guest',
   auth: {
     unauthenticatedOnly: true,
-    navigateAuthenticatedTo: "/home",
+    navigateAuthenticatedTo: "/",
   },
 });
   // Can't access window statically

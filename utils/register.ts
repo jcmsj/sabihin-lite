@@ -1,7 +1,7 @@
 import { encodeBase64 } from "hash-wasm/lib/util";
-import { randomKeyPair } from "../cryptography/keypair";
-import { deriveNew } from "../cryptography/masterkey";
-export async function signUp(userName: string, password: string, domain: string) {
+import { randomKeyPair } from "./cryptography/keypair";
+import { deriveNew } from "./cryptography/masterkey";
+export async function register(userName: string, password: string, domain: string) {
     // Sign up logic
     const masterKey = await deriveNew(password);
 
