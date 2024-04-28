@@ -28,7 +28,6 @@ definePageMeta({
     }
 })
 
-
 const publicKeyCache = ref<Record<string, CryptoKey>>({})
 
 async function fetchPublicKey(username: string) {
