@@ -32,7 +32,7 @@
                 {
                   # https://devenv.sh/reference/options/
                   packages = with pkgs; [
-
+                    
                   ];
                   services.postgres = {
                     enable = true;

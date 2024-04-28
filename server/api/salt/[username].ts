@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { DrizzleError, eq } from "drizzle-orm";
 import { db, tables } from "~/server/db";
 async function getSalt(username: string) {
     return await db.select({
@@ -11,8 +11,8 @@ async function getSalt(username: string) {
         .limit(1).then(takeUniqueOrThrow)
 }
 
-export default eventHandler(async(event) => {
-    const username:string|undefined = getRouterParam(event, 'username')
+export default eventHandler(async (event) => {
+    const username: string | undefined = getRouterParam(event, 'username')
     if (!username) {
         throw createError({
             statusCode: 400,
@@ -20,5 +20,14 @@ export default eventHandler(async(event) => {
         })
     }
     const result = await getSalt(username)
-    return result.salt
+        .catch(error => {
+            if (error.message == 'Found non unique or inexistent value') {
+                throw createError({
+                    statusCode: 401,
+                    statusMessage: "Invalid username or password"
+                })
+            }
+            console.log(error.message)
+        })
+    return result?.salt
 })

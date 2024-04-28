@@ -2,7 +2,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { NuxtAuthHandler } from '#auth'
 import { db, tables } from '~/server/db'
-import { and, eq } from 'drizzle-orm'
+import { DrizzleError, and, eq } from 'drizzle-orm'
 import { takeUniqueOrThrow } from '~/server/utils/takeUniqueOrThrow'
 import * as auth from '~/server/utils/auth'
 
@@ -46,11 +46,23 @@ export default NuxtAuthHandler({
                 try {
                     result = await getSecret(credentials.username, credentials.domainSignature)
                 } catch (error) {
-                    console.error('Error: ', error)
-                    throw createError({
-                        statusCode: 401,
-                        statusMessage: JSON.stringify(error)
-                    })
+                    if (error instanceof DrizzleError) {
+                        if (error.message == 'Found non unique or inexistent value') {
+                            throw createError({
+                                statusCode: 401, 
+                                statusMessage: "Invalid username or password"
+                            })
+                        }
+                        throw createError({
+                            statusCode: 401,
+                            statusMessage: JSON.stringify(error)
+                        })
+                    } else {
+                        throw createError({
+                            statusCode: 500, // Internal Server Error
+                            statusMessage: JSON.stringify(error)
+                        })
+                    }
                 }
 
                 if (result) {
@@ -74,15 +86,14 @@ export default NuxtAuthHandler({
             return token
         },
         async session({ session, token }) {
-            // session.user?.name
-            console.log('token: ', token)
+            // console.log('token: ', token)
             if (token) {
                 session.user = {
-                    id: token.id,
-                    name: token.name
+                    id: token.id as number,
+                    name: token.name as string,
                 }
             }
-            console.log('session: ', session)
+            // console.log('session: ', session)
             return Promise.resolve(session)
         },
     }

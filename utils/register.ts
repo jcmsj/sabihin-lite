@@ -1,7 +1,7 @@
 import { encodeBase64 } from "hash-wasm/lib/util";
 import { randomKeyPair } from "./cryptography/keypair";
 import { deriveNew } from "./cryptography/masterkey";
-export async function register(userName: string, password: string, domain: string): Promise<{ status: number, message: string }> | never {
+export async function register(userName: string, password: string, domain: string): Promise<{ status: number, message: string }>{
     // TODO: verify unused username
 
     // Sign up logic
@@ -39,7 +39,7 @@ export async function register(userName: string, password: string, domain: strin
         }
     })
     if (r === true || r === false) {
-        login(userName, password, domain)
+        return login(userName, password, domain) as never
     } else {
         return r
     }

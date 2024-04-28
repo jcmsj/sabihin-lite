@@ -9,9 +9,89 @@ export interface MasterKey {
     decryptBuffer(msg: ArrayBuffer): Promise<ArrayBuffer>
     wrapKey(format: KeyFormat, toWrap: CryptoKey): Promise<ArrayBuffer>
     encryptoToHex(msg: string): Promise<string>
+    export(): Promise<string>
+    unwrapKey(format: KeyFormat, encryptedKey: ArrayBuffer): Promise<CryptoKey>
 }
 
 export const USAGES: KeyUsage[] = ["decrypt", "wrapKey", "unwrapKey", "encrypt"]
+
+function newMasterKey({ key, salt }: { key: CryptoKey, salt: Uint8Array }): MasterKey {
+    return {
+        key,
+        salt,
+        async encrypt(msg) {
+            const msgBuffer = new TextEncoder().encode(msg);
+            return await this.encryptBuffer(msgBuffer)
+        },
+        async decrypt(secret) {
+            const msgBuffer = new TextEncoder().encode(secret);
+            return await this.decryptBuffer(msgBuffer)
+        },
+        async encryptBuffer(msg) {
+            return await crypto.subtle.encrypt({
+                name: "AES-GCM",
+                length: 256,
+                iv: this.salt,
+            }, this.key, msg)
+        },
+        async decryptBuffer(secret) {
+            return await crypto.subtle.decrypt({
+                name: "AES-GCM",
+                length: 256,
+                iv: this.salt,
+            }, this.key, secret)
+        },
+        async wrapKey(format: KeyFormat, toWrap: CryptoKey) {
+            return await crypto.subtle.wrapKey(
+                format, 
+                toWrap, 
+                this.key, 
+                { 
+                    name: "AES-GCM", 
+                    length: 256, 
+                    iv: this.salt
+                }
+            )
+        },
+        async encryptoToHex(msg: string) {
+            const msgBuffer = new TextEncoder().encode(msg);
+            const encrypted = await this.encryptBuffer(msgBuffer);
+            return Array.from(new Uint8Array(encrypted)).map(x => x.toString(16).padStart(2, '0')).join('')
+        },
+        async export() {
+            const value = await crypto.subtle.exportKey("jwk", key)
+            return JSON.stringify({
+                ...value,
+                salt: Array.from(this.salt)
+            })
+        },
+        async unwrapKey(format:KeyFormat,encryptedKey: ArrayBuffer):Promise<CryptoKey> {
+            return await crypto.subtle.unwrapKey(
+                format,
+                encryptedKey,
+                this.key,
+                {
+                    name: "AES-GCM",
+                    length: 256,
+                    iv: this.salt
+                },
+                { 
+                    name: "RSA-OAEP", 
+                    hash: "SHA-256",
+                },
+                true,
+                ["decrypt","unwrapKey"]
+            )
+        }
+    }
+}
+
+export async function importKey(key: string) {
+    const {salt, ...jwk} = JSON.parse(key)
+    const importedKey = await crypto.subtle.importKey("jwk", jwk, { name: "AES-GCM", length: 256 }, true, USAGES)
+    console.log(importedKey)
+    return newMasterKey({ key: importedKey, salt: Uint8Array.from(salt) })
+}
 
 export async function derive(
     password: string, 
@@ -31,7 +111,6 @@ export async function derive(
         memorySize: 1024, //use 1MB
     })
 
-    // treat hashed salted password as an ECDH key
     const passwordKey = await crypto.subtle.importKey("raw", hashedSaltedPassword, "PBKDF2", false, ["deriveKey"])
     const masterKey = await crypto.subtle.deriveKey(
         {
@@ -46,55 +125,7 @@ export async function derive(
         USAGES,
     );
 
-    const o:MasterKey = { 
-        key: masterKey, 
-        salt,
-        async encrypt(msg) {
-            const msgBuffer = new TextEncoder().encode(msg);
-            return await this.encryptBuffer(msgBuffer)
-        },
-        async decrypt(secret) {
-            const msgBuffer = new TextEncoder().encode(secret);
-            return await this.decryptBuffer(msgBuffer)
-        },
-        async encryptBuffer(msg) {
-            return await crypto.subtle.encrypt({
-                name: "AES-GCM",
-                length: 256,
-                iv: salt,
-            }, masterKey, msg)
-        },
-        async decryptBuffer(secret) {
-            return await crypto.subtle.decrypt({
-                name: "AES-GCM",
-                length: 256,
-                iv: salt,
-            }, masterKey, secret)
-        },
-
-        /**
-         * @see https://developer.mozilla.org/en-US/docs/Web/API/crypto.subtleCrypto/wrapKey
-         */
-        async wrapKey(format:KeyFormat, toWrap: CryptoKey) {
-            return await crypto.subtle.wrapKey(
-                format, 
-                toWrap, 
-                this.key, 
-                { 
-                    name: "AES-GCM", 
-                    length: 256, 
-                    iv: salt
-                }
-            )
-        },
-        async encryptoToHex(msg: string) {
-            const msgBuffer = new TextEncoder().encode(msg);
-            const encrypted = await this.encryptBuffer(msgBuffer);
-            return Array.from(new Uint8Array(encrypted)).map(x => x.toString(16).padStart(2, '0')).join('')
-        }
-     }
-
-     return o
+    return newMasterKey({ key: masterKey, salt })
 }
 export async function deriveFromIterables(password: string, salt: Iterable<number>, nonce: Iterable<number>) {
     return derive(password,

@@ -31,6 +31,7 @@
     "@vueuse/nuxt": "^10.9.0",
     "daisyui": "^4.10.2",
     "drizzle-kit": "^0.20.17",
+    "next-auth": "^4.21.1",
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
     "nuxt-typed-router": "^3.6.3",
@@ -40,12 +41,13 @@
   "license": "MIT",
   "dependencies": {
     "@types/pg": "^8.11.5",
+    "@vueuse/core": "^10.9.0",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-common": "^3.0.4",
     "@zxcvbn-ts/language-en": "^3.0.2",
     "drizzle-orm": "^0.29.5",
     "hash-wasm": "^4.11.0",
-    "next-auth": "^4.21.1",
     "pg": "^8.11.5"
-  }
+  },
+  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
 }

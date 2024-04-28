@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     '@vueuse/nuxt',
     "@formkit/nuxt",
-    ["@sidebase/nuxt-auth", { exposeConfig: true, autoImports: true }],
+    "@sidebase/nuxt-auth",
     "nuxt-typed-router"
   ],
   auth: {
@@ -31,4 +31,7 @@ export default defineNuxtConfig({
       },
     }
   },
+  icon: {
+    
+  }
 })

@@ -10,5 +10,5 @@ const client = new Client({
     connectionString: process.env.DATABASE_URL!,
     connectionTimeoutMillis: 5000,
 });
-await client.connect();
 export const db = drizzle(client);
+await client.connect();
