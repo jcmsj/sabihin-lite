@@ -50,7 +50,6 @@
 import { login } from "~/utils/login"
 import { DOMAIN } from "~/utils/domain"
 definePageMeta({
-  layout: 'guest',
   auth: {
     unauthenticatedOnly: true,
     navigateAuthenticatedTo: "/",
