@@ -45,7 +45,7 @@
         </div>
         <div class="join flex justify-center">
             <button class="btn join-item " @click="page = Math.max(0, page - 1)" :class="{ 'btn-disabled': disablePrev }">
-                <Icon name="mi:previous" />
+                <Icon name="mi:caret-left"  class="text-3xl"/>
                 Previous
             </button>
             <button class="btn" :class="{ 'btn-disabled': pendingMessages }" @click="onRefreshClick()">
@@ -54,7 +54,7 @@
             </button>
             <button class="btn join-item" @click="page++" :class="{ 'btn-disabled': disableNext }">
                 Next
-                <Icon name="mi:next" />
+                <Icon name="mi:caret-right" class="text-3xl" />
             </button>
         </div>
         <div>
