@@ -94,7 +94,7 @@ async function onRefreshClick() {
     await fetchTotalMessages();
     await fetchMessages();
 }
-const maxPage = computed(() => Math.max(0, ((totalMessages.value?.count ?? 0) / pageSize.value) - 1))
+const maxPage = computed(() => Math.max(0, Math.ceil((totalMessages.value?.count ?? 0) / pageSize.value) - 1))
 const displayedMaxPage = computed(() => maxPage.value + 1)
 const disableNext = computed(() => page.value >= maxPage.value)
 const disablePrev = computed(() => page.value <= 0)
