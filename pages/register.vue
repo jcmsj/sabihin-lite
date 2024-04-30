@@ -31,7 +31,6 @@ import { register } from '~/utils/register';
 import {DOMAIN} from "~/utils/domain"
 
 definePageMeta({
-  layout: 'guest',
   auth: {
     unauthenticatedOnly: true,
     navigateAuthenticatedTo: "/",
