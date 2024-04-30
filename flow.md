@@ -41,7 +41,7 @@
 
 ### Keypair derivation
 1. input: `master key`
-2. generate an ECDH keypair
+2. generate an RSA-OAEP keypair
 3. encrypt the private key using the master key
 4. return the public key and the encrypted private key
 
