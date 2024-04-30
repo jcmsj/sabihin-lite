@@ -32,7 +32,7 @@
                 {
                   # https://devenv.sh/reference/options/
                   packages = with pkgs; [
-                    
+                    cloudflared
                   ];
                   services.postgres = {
                     enable = true;

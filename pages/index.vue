@@ -28,7 +28,7 @@
         <div v-if="!decryptedMessages?.length">
             <div class="card w-96 bg-base-100">
                 <figure class="px-10 pt-10">
-                    <img src="https://bocchitherock.shop/wp-content/uploads/2023/06/raf750x1000075t10101001c5ca27c6-31.jpg" alt="Sad bocchi"
+                    <img crossorigin="anonymous" src="https://bocchitherock.shop/wp-content/uploads/2023/06/raf750x1000075t10101001c5ca27c6-31.jpg" alt="Sad bocchi"
                         class="rounded-xl" />
                 </figure>
                 <div class="card-body items-center text-center">
